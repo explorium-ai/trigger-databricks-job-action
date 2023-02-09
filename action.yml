@@ -41,14 +41,30 @@ runs:
 
     - name: Run Databricks Job
       id: trigger
-      shell: zsh {0}
+      shell: python
       run: |
-        if [ $(echo '${{ inputs.payload }}' | jq tostring) == '{}' ]; then
-          job_run_id=$(databricks jobs run-now --job-id='${{ inputs.job-id }}' | jq -r '.run_id')
-        else
-          job_run_id=$(databricks jobs run-now --notebook-params=$(echo '${{ inputs.payload }}' | jq -c .) --job-id='${{ inputs.job-id }}' | jq -r '.run_id')
-        fi
-        echo "job_run_id=$job_run_id" >> $GITHUB_OUTPUT
+        import requests
+        import json
+        import os
+        def trigger_databricks_job(job_id, params):
+            api_url = "${{ inputs.host }}/api/2.0/jobs/run-now"
+            api_token = "${{ inputs.token }}"
+            headers = {
+                "Authorization": "Bearer " + api_token,
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "job_id": "${{ inputs.job-id }}",
+                "notebook_params": json.dumps("${{ inputs.payload }}")
+            }
+            response = requests.post(api_url, headers=headers, data=json.dumps(payload))
+            if response.status_code == 200:
+                run_id = response.json()["run_id"]
+                with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+                    print(f'job_run_id={run_id}', file=fh)                
+            else:
+                raise Exception(f"Failed to trigger the job: {response.text}")
+                
     - name: Wait for Databricks Job to Complete
       shell: bash
       run: |
