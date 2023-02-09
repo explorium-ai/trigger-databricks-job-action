@@ -7,6 +7,9 @@ inputs:
   token:
     description: Databricks Authentication Token
     required: true
+  host:
+    description: Databricks Host URL
+    required: true
   job-id:
     description: Databricks Workflow Job ID
     required: true      
@@ -26,7 +29,7 @@ runs:
     - name: Authentication to Databricks
       shell: bash
       run: |
-        databricks configure --token ${{ inputs.token }}
+        databricks configure --token ${{ inputs.token }} --host ${{ inputs.host }}
         databricks workspace list
     
     - name: Run Databricks Job
