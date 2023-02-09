@@ -30,10 +30,25 @@ runs:
         databricks workspace list
     
     - name: Run Databricks Job
+      id: trigger
       shell: bash
       run: |
         if [ -z "${{ inputs.payload }}" ]; then
-          databricks runs submit job ${{ inputs.job-id }}
+          job_run_id=$(databricks runs submit job ${{ inputs.job-id }} | jq -r '.run_id')
         else
-          databricks runs submit job --json ${{ inputs.payload }} ${{ inputs.job-id }}
+          job_run_id=$(databricks runs submit job --json ${{ inputs.payload }} ${{ inputs.job-id }} | jq -r '.run_id')
+        fi
+        echo "job_run_id=$job_run_id" >> $GITHUB_OUTPUT
+
+    - name: Wait for Databricks Job to Complete
+      shell: bash
+      run: |
+        result=$(databricks runs wait --run-id ${{ steps.trigger.outputs.job_run_id }})
+        echo "Job result: $result"
+        if [ "$result" = "SUCCESS" ]; then
+          echo "Job succeeded"
+          exit 0
+        else
+          echo "Job failed"
+          exit 1
         fi
