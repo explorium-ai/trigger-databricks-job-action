@@ -56,6 +56,7 @@ runs:
             response = requests.post(api_url, headers=headers, data=json.dumps(payload))
             if response.status_code == 200:
                 run_id = response.json()["run_id"]
+                print(run_id)
                 print(f'::set-output name=job_run_id::{run_id}')
             else:
                 raise Exception(f"Failed to trigger the job: {response.text}")
