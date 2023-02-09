@@ -43,7 +43,7 @@ runs:
         if [ $(echo '${{ inputs.payload }}' | jq tostring) == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         else
-          job_run_id=$(databricks jobs run-now --notebook-params ${{ inputs.payload }} --job-id ${{ inputs.job-id }} | jq -r '.run_id')
+          job_run_id=$(databricks jobs run-now --notebook-params '${{ inputs.payload }}' --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         fi
         echo "job_run_id=$job_run_id" >> $GITHUB_OUTPUT
 
