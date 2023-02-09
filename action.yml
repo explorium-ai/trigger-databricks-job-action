@@ -35,9 +35,13 @@ runs:
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@v1.0.1
 
+    - name: Install zsh
+      shell: bash
+      run: sudo apt-get update; sudo apt-get install zsh
+
     - name: Run Databricks Job
       id: trigger
-      shell: bash
+      shell: zsh {0}
       run: |
         if [ $(echo '${{ inputs.payload }}' | jq tostring) == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id='${{ inputs.job-id }}' | jq -r '.run_id')
