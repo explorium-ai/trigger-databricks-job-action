@@ -56,8 +56,7 @@ runs:
             response = requests.post(api_url, headers=headers, data=json.dumps(payload))
             if response.status_code == 200:
                 run_id = response.json()["run_id"]
-                with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-                    print(f'job_run_id={run_id}', file=fh)                
+                print(f'::set-output name=job_run_id::{run_id}')
             else:
                 raise Exception(f"Failed to trigger the job: {response.text}")
 
