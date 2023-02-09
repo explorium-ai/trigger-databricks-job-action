@@ -15,7 +15,7 @@ inputs:
     required: true      
   payload:
     description: the directory path to the specified chart
-    default: "{}"
+    default: '{}'
     required: false
 runs:
   using: "composite"
@@ -36,7 +36,7 @@ runs:
       id: trigger
       shell: bash
       run: |
-        if jq -e '. == {}' <"${{ inputs.payload }}" >/dev/null; then
+        if [ '${{ inputs.payload }}' == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         else
           job_run_id=$(databricks jobs run-now --notebook-params '${{ inputs.payload }}' --job-id ${{ inputs.job-id }} | jq -r '.run_id')
