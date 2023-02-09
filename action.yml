@@ -32,15 +32,18 @@ runs:
         echo "DATABRICKS_HOST=${{ inputs.host }}" >> $GITHUB_ENV
         echo "DATABRICKS_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
 
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@v1.0.1
+
     - name: Run Databricks Job
       id: trigger
       shell: bash
       run: |
-        VARIABLE=$(echo '${{ inputs.payload }}' | jq tostring);
-        if [ "$VARIABLE" == '{}' ]; then
+        echo "Generating Job ID"
+        if [ $(echo '${{ inputs.payload }}' | jq tostring) == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         else
-          job_run_id=$(databricks jobs run-now --notebook-params '${{ inputs.payload }}' --job-id ${{ inputs.job-id }} | jq -r '.run_id')
+          job_run_id=$(databricks jobs run-now --notebook-params ${{ inputs.payload }} --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         fi
         echo "job_run_id=$job_run_id" >> $GITHUB_OUTPUT
 
