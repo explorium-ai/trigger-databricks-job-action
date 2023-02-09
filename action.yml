@@ -42,34 +42,33 @@ runs:
         import requests
         import json
         import os
-        def trigger_databricks_job(job_id, params):
-            api_url = "${{ inputs.host }}/api/2.0/jobs/run-now"
-            api_token = "${{ inputs.token }}"
-            headers = {
-                "Authorization": "Bearer " + api_token,
-                "Content-Type": "application/json"
-            }
-            payload = {
-                "job_id": "${{ inputs.job-id }}",
-                "notebook_params": json.dumps(${{ inputs.payload }})
-            }
-            response = requests.post(api_url, headers=headers, data=json.dumps(payload))
-            if response.status_code == 200:
-                run_id = response.json()["run_id"]
-                print(run_id)
-                print(f'::set-output name=job_run_id::{run_id}')
-            else:
-                raise Exception(f"Failed to trigger the job: {response.text}")
+        api_url = "${{ inputs.host }}/api/2.0/jobs/run-now"
+        api_token = "${{ inputs.token }}"
+        headers = {
+            "Authorization": "Bearer " + api_token,
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "job_id": "${{ inputs.job-id }}",
+            "notebook_params": json.dumps(${{ inputs.payload }})
+        }
+        response = requests.post(api_url, headers=headers, data=json.dumps(payload))
+        if response.status_code == 200:
+            run_id = response.json()["run_id"]
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+                print(f'run_id={run_id}', file=fh)
+        else:
+            raise Exception(f"Failed to trigger the job: {response.text}")
 
     - name: Wait for Databricks Job to Complete
       shell: bash
       run: |
-        status=$(databricks runs get --run-id ${{ steps.trigger.outputs.job_run_id }} | jq -r '.state.life_cycle_state')
+        status=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
         while [ "$status" == "RUNNING" ]; do
-          status=$(databricks runs get --run-id ${{ steps.trigger.outputs.job_run_id }} | jq -r '.state.life_cycle_state')
+          status=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
           sleep 10
         done
-        result=$(databricks runs get --run-id ${{ steps.trigger.outputs.job_run_id }} | jq -r '.state.result_state')
+        result=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.result_state')
         echo "Job result: $result"
         if [ "$result" = "SUCCESS" ]; then
           echo "Job succeeded"
