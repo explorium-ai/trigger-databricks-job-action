@@ -39,7 +39,7 @@ runs:
       id: trigger
       shell: bash
       run: |
-        PAYLOAD = $(echo '${{ inputs.payload }}' | jq tostring)
+        PAYLOAD=$(echo '${{ inputs.payload }}' | jq tostring)
         if [ $(echo $PAYLOAD | jq tostring) == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         else
