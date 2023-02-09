@@ -36,7 +36,8 @@ runs:
       id: trigger
       shell: bash
       run: |
-        if [ "${{ inputs.payload }}" == '{}' ]; then
+        VARIABLE=$(echo ${{ inputs.payload }});
+        if [ "VARIABLE" == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         else
           job_run_id=$(databricks jobs run-now --notebook-params '${{ inputs.payload }}' --job-id ${{ inputs.job-id }} | jq -r '.run_id')
