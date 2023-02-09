@@ -37,7 +37,7 @@ runs:
       shell: bash
       run: |
         VARIABLE=$(echo ${{ inputs.payload }});
-        if [ "VARIABLE" == '{}' ]; then
+        if [ "$VARIABLE" == '{}' ]; then
           job_run_id=$(databricks jobs run-now --job-id ${{ inputs.job-id }} | jq -r '.run_id')
         else
           job_run_id=$(databricks jobs run-now --notebook-params '${{ inputs.payload }}' --job-id ${{ inputs.job-id }} | jq -r '.run_id')
