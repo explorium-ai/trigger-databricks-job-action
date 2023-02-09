@@ -51,7 +51,7 @@ runs:
             }
             payload = {
                 "job_id": "${{ inputs.job-id }}",
-                "notebook_params": json.dumps("${{ inputs.payload }}")
+                "notebook_params": json.dumps(${{ inputs.payload }})
             }
             response = requests.post(api_url, headers=headers, data=json.dumps(payload))
             if response.status_code == 200:
