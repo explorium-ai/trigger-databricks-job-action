@@ -26,12 +26,12 @@ runs:
     - name: install-databricks-cli
       uses: microsoft/install-databricks-cli@v1.0.0
 
-    - name: Authentication to Databricks
+    - name: Set Credentials
       shell: bash
       run: |
-        databricks configure --token ${{ inputs.token }} --host ${{ inputs.host }}
-        databricks workspace list
-    
+        echo "DATABRICKS_HOST=${{ inputs.host }}" >> $GITHUB_ENV
+        echo "DATABRICKS_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
+
     - name: Run Databricks Job
       id: trigger
       shell: bash
