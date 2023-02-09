@@ -1,0 +1,39 @@
+name: Trigger Databricks Job
+description: Trigger a Databricks Workflow Job
+branding:
+  icon: hard-drive
+  color: blue
+inputs:
+  token:
+    description: Databricks Authentication Token
+    required: true
+  job-id:
+    description: Databricks Workflow Job ID
+    required: true      
+  payload:
+    description: the directory path to the specified chart
+    default: ""
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4.5.0
+
+    - name: install-databricks-cli
+      uses: microsoft/install-databricks-cli@v1.0.0
+
+    - name: Authentication to Databricks
+      shell: bash
+      run: |
+        databricks configure --token ${{ inputs.token }}
+        databricks workspace list
+    
+    - name: Run Databricks Job
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.payload }}" ]; then
+          databricks runs submit job ${{ inputs.job-id }}
+        else
+          databricks runs submit job --json ${{ inputs.payload }} ${{ inputs.job-id }}
+        fi
