@@ -40,10 +40,9 @@ runs:
       shell: bash
       run: |
         if [ $(echo '${{ inputs.payload }}' | jq tostring) == '{}' ]; then
-          job_run_id=$(databricks jobs run-now --job-id=$(echo ${{ inputs.job-id }} | jq -c .) | jq -r '.run_id')
+          job_run_id=$(databricks jobs run-now --job-id={{ inputs.job-id }} | jq -r '.run_id')
         else
-          PARAMS=$(echo '${{ inputs.payload }}' | jq -c .)
-          job_run_id=$(databricks jobs run-now --notebook-params=$PARAMS --job-id=$(echo ${{ inputs.job-id }} | jq -c .) | jq -r '.run_id')
+          job_run_id=$(databricks jobs run-now --notebook-params=$(echo '${{ inputs.payload }}' | jq -c .) --job-id={{ inputs.job-id }} | jq -r '.run_id')
         fi
         echo "job_run_id=$job_run_id" >> $GITHUB_OUTPUT
 
