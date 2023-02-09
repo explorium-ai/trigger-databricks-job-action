@@ -35,10 +35,6 @@ runs:
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@v1.0.1
 
-    - name: Install zsh
-      shell: bash
-      run: sudo apt-get update; sudo apt-get install -y zsh 
-
     - name: Run Databricks Job
       id: trigger
       shell: python
@@ -64,7 +60,7 @@ runs:
                     print(f'job_run_id={run_id}', file=fh)                
             else:
                 raise Exception(f"Failed to trigger the job: {response.text}")
-                
+
     - name: Wait for Databricks Job to Complete
       shell: bash
       run: |
