@@ -1,6 +1,6 @@
-# Package Helm GHCR Action
+# Trigger Databricks Job
 
-Package a helm chart and deploy to an GHCR repository using OCI
+Trigger a Databricks Workflow Job
 ## Full Example usage
 
 ```yaml
