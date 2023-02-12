@@ -60,14 +60,14 @@ runs:
         DATABRICKS_HOST: ${{ inputs.host }}
         DATABRICKS_TOKEN: ${{ inputs.token }}
       run: |
-        status=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
-        while [ "$status" == "RUNNING" ]; do
-          status=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
+        status_run=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
+        while [ "$status_run" == "RUNNING" ]; do
+          status_run=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
           sleep 10
         done
-        result=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.result_state')
-        echo "Job result: $result"
-        if [ "$result" = "SUCCESS" ]; then
+        result_run=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.result_state')
+        echo "Job result: $result_run"
+        if [ "$result_run" = "SUCCESS" ]; then
           echo "Job succeeded"
           exit 0
         else
