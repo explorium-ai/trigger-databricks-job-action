@@ -50,9 +50,9 @@ runs:
         }
         payload = {
             "job_id": "${{ inputs.job-id }}",
-            "notebook_params": json.dumps(${{ inputs.payload }})
+            "notebook_params": json.dumps(${{ inputs.payload }}, separators=(',', ':'))
         }
-        response = requests.post(api_url, headers=headers, data=json.dumps(payload))
+        response = requests.post(api_url, headers=headers, data=json.dumps(payload, separators=(',', ':')))
         if response.status_code == 200:
             run_id = response.json()["run_id"]
             with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
