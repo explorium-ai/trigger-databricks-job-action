@@ -62,7 +62,7 @@ runs:
       run: |
         status_run=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
         echo "Job status: $status_run"
-        while [ "$status_run" == "RUNNING" ]; do
+        while [ "$status_run" == "RUNNING" || "$status_run" == "PENDING" ]; do
           status_run=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
           echo "Job status: $status_run"
           sleep 10
