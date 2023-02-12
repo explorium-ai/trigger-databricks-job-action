@@ -69,7 +69,7 @@ runs:
         done
         result_run=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.result_state')
         echo "Job result: $result_run"
-        if [ "$result_run" = "SUCCESS" ]; then
+        if [ "$result_run" == "SUCCESS" ]; then
           echo "Job succeeded"
           exit 0
         else
