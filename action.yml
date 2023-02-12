@@ -26,12 +26,6 @@ runs:
     - name: install-databricks-cli
       uses: microsoft/install-databricks-cli@v1.0.0
 
-    - name: Set Credentials
-      shell: bash
-      run: |
-        echo "DATABRICKS_HOST=${{ inputs.host }}" >> $GITHUB_ENV
-        echo "DATABRICKS_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
-
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@v1.0.1
 
@@ -62,6 +56,9 @@ runs:
 
     - name: Wait for Databricks Job to Complete
       shell: bash
+      env:
+        DATABRICKS_HOST: ${{ inputs.host }}
+        DATABRICKS_TOKEN: ${{ inputs.token }}
       run: |
         status=$(databricks runs get --run-id ${{ steps.trigger.outputs.run_id }} | jq -r '.state.life_cycle_state')
         while [ "$status" == "RUNNING" ]; do
